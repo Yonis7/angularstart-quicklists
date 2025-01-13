@@ -5,6 +5,7 @@ import { Checklist } from '../shared/interfaces/checklist';
 import { FormModalComponent } from '../shared/ui/form-modal.component';
 import { FormBuilder } from '@angular/forms';
 import { ChecklistService } from '../shared/data-access/checklist.service';
+import { ChecklistListComponent } from "../shared/ui/checklist-list.component";
 
 @Component({
   selector: 'app-home', // This tells Angular where to put our home page
@@ -30,13 +31,18 @@ import { ChecklistService } from '../shared/data-access/checklist.service';
         />
       </ng-template>
     </app-modal>
+
+    <section>
+      <h2>Your checklists</h2>
+      <app-checklist-list [checklists]="checklistService.checklists()" />
+    </section>
   `,
-  imports: [ModalComponent, FormModalComponent], // Add popup window capability to our page
+  imports: [ModalComponent, FormModalComponent, ChecklistListComponent], // Add popup window capability to our page
 })
 // This class defines the main functionality for our home page
 export default class HomeComponent {
   checklistService = inject(ChecklistService); // Tool to manage checklists
-  
+
   formBuilder = inject(FormBuilder); // Tool to help create and manage forms
 
   // Keeps track of which checklist we're editing (null means none)
