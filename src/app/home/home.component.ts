@@ -1,5 +1,5 @@
 // This is our app's main page - like the home screen on your phone
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { ModalComponent } from '../shared/ui/modal.component';
 import { Checklist } from '../shared/interfaces/checklist';
 import { FormModalComponent } from '../shared/ui/form-modal.component';
@@ -31,15 +31,27 @@ import { FormBuilder } from '@angular/forms';
   `,
   imports: [ModalComponent, FormModalComponent], // Add popup window capability to our page
 })
+// This class defines the main functionality for our home page
 export default class HomeComponent {
-  formBuilder = inject(FormBuilder); // Get form creation tools
+  formBuilder = inject(FormBuilder); // Tool to help create and manage forms
 
   // Keeps track of which checklist we're editing (null means none)
-  // Think of it like a spotlight - it highlights the checklist being worked on
   checklistBeingEdited = signal<Partial<Checklist> | null>(null);
 
-  // Setup the form structure for checklists
+  // Defines the structure of our checklist form with a title field
   checklistForm = this.formBuilder.nonNullable.group({
-    title: [''], // Text field for checklist title
+    title: [''], // Text field for the checklist title
   });
+
+  constructor() {
+    // Watch for changes to the checklist being edited
+    effect(() => {
+      const checklist = this.checklistBeingEdited();
+
+      // If no checklist is being edited, reset the form to be empty
+      if (!checklist) {
+        this.checklistForm.reset();
+      }
+    });
+  }
 }
