@@ -43,6 +43,7 @@ export default class HomeComponent {
     title: [''], // Text field for the checklist title
   });
 
+  // This constructor runs when the page is loaded and sets up our form behavior, like a robot assistant for the form fields and buttons on the page.
   constructor() {
     // Watch for changes to the checklist being edited
     effect(() => {
