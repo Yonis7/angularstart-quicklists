@@ -25,6 +25,7 @@ export class ChecklistService {
   // A stream that we can use to add new checklists
   add$ = new Subject<AddChecklist>();
 
+  // This constructor sets up the service to listen for new checklists and update the state accordingly when they arrive.
   constructor() {
     // Listen for new checklists to be added and update the state
     this.add$.pipe(takeUntilDestroyed()).subscribe((checklist) =>
