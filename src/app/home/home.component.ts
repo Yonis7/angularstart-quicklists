@@ -34,6 +34,7 @@ import { ChecklistListComponent } from "../shared/ui/checklist-list.component";
 
     <section>
       <h2>Your checklists</h2>
+      <!-- Display a list of all check lists -->
       <app-checklist-list [checklists]="checklistService.checklists()" />
     </section>
   `,
