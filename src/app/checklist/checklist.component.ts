@@ -21,8 +21,10 @@ import { ChecklistItemListComponent } from './ui/checklist-item-list.component';
       [checklist]="checklist"
       (addItem)="checklistItemBeingEdited.set({})"
     />
-    <app-checklist-item-list [checklistItems]="items()" />
-
+    <app-checklist-item-list
+      [checklistItems]="items()"
+      (toggle)="checklistItemService.toggle$.next($event)"
+    />
     }
 
     <app-modal [isOpen]="!!checklistItemBeingEdited()">
@@ -39,7 +41,12 @@ import { ChecklistItemListComponent } from './ui/checklist-item-list.component';
       </ng-template>
     </app-modal>
   `,
-  imports: [ChecklistHeaderComponent, ModalComponent, FormModalComponent, ChecklistItemListComponent], // Import the header component for displaying checklist details, and the modal component for creating new checklist items, and the form modal component for creating new checklist items
+  imports: [
+    ChecklistHeaderComponent,
+    ModalComponent,
+    FormModalComponent,
+    ChecklistItemListComponent,
+  ], // Import the header component for displaying checklist details, and the modal component for creating new checklist items, and the form modal component for creating new checklist items
 })
 export default class ChecklistComponent {
   checklistService = inject(ChecklistService); // Get the checklist service to manage data
