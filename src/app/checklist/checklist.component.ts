@@ -7,6 +7,8 @@ import { ChecklistHeaderComponent } from './ui/checklist-header.component';
 import { FormBuilder } from '@angular/forms';
 import { ChecklistItemService } from './data-access/checklist-item.service';
 import { ChecklistItem } from '../shared/interfaces/checklist-item';
+import { ModalComponent } from "../shared/ui/modal.component";
+import { FormModalComponent } from "../shared/ui/form-modal.component";
 
 // Define our checklist component
 @Component({
@@ -14,10 +16,27 @@ import { ChecklistItem } from '../shared/interfaces/checklist-item';
   template: `
     <!-- Display the checklist header if a checklist is found -->
     @if (checklist(); as checklist){
-    <app-checklist-header [checklist]="checklist" />
+    <app-checklist-header
+      [checklist]="checklist"
+      (addItem)="checklistItemBeingEdited.set({})"
+    />
     }
+
+    <app-modal [isOpen]="!!checklistItemBeingEdited()">
+      <ng-template>
+        <app-form-modal
+          title="Create item"
+          [formGroup]="checklistItemForm"
+          (save)="checklistItemService.add$.next({
+            item: checklistItemForm.getRawValue(),
+            checklistId: checklist()?.id!,
+          })"
+          (close)="checklistItemBeingEdited.set(null)"
+        ></app-form-modal>
+      </ng-template>
+    </app-modal>
   `,
-  imports: [ChecklistHeaderComponent], // Import the header component for displaying checklist details
+  imports: [ChecklistHeaderComponent, ModalComponent, FormModalComponent], // Import the header component for displaying checklist details
 })
 export default class ChecklistComponent {
   checklistService = inject(ChecklistService); // Get the checklist service to manage data
