@@ -6,6 +6,7 @@ import {
   ChecklistItem,
   RemoveChecklistItem,
 } from '../../shared/interfaces/checklist-item';
+import { RemoveChecklist } from '../../shared/interfaces/checklist';
 
 export interface ChecklistItemsState {
   checklistItems: ChecklistItem[];
@@ -30,6 +31,9 @@ export class ChecklistItemService {
   // A stream that we can use to delete checklist items
   toggle$ = new Subject<RemoveChecklistItem>();
 
+  // A stream to change checked state of items for a particular checklist back to false
+  reset$ = new Subject<RemoveChecklist>();
+
   constructor() {
     // Listen for new checklist items to be added and update the state
     this.add$.pipe(takeUntilDestroyed()).subscribe((checklistItem) =>
@@ -39,9 +43,9 @@ export class ChecklistItemService {
           ...state.checklistItems,
           {
             ...checklistItem.item,
-            id: Date.now().toString(),  // Generate a unique ID using the current timestamp
-            checklistId: checklistItem.checklistId,  // Associate the item with the correct checklist
-            checked: false,  // New items start as unchecked
+            id: Date.now().toString(), // Generate a unique ID using the current timestamp
+            checklistId: checklistItem.checklistId, // Associate the item with the correct checklist
+            checked: false, // New items start as unchecked
           },
         ],
       }))
@@ -55,6 +59,16 @@ export class ChecklistItemService {
           item.id === checklistItemId
             ? { ...item, checked: !item.checked }
             : item
+        ),
+      }))
+    );
+
+    // A reducer function to reset the checked state of all items for a particular checklist back to false
+    this.reset$.pipe(takeUntilDestroyed()).subscribe((checklistId) =>
+      this.state.update((state) => ({
+        ...state,
+        checklistItems: state.checklistItems.map((item) =>
+          item.checklistId === checklistId ? { ...item, checked: false } : item
         ),
       }))
     );
