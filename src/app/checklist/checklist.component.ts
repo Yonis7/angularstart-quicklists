@@ -36,7 +36,7 @@ import { FormModalComponent } from "../shared/ui/form-modal.component";
       </ng-template>
     </app-modal>
   `,
-  imports: [ChecklistHeaderComponent, ModalComponent, FormModalComponent], // Import the header component for displaying checklist details
+  imports: [ChecklistHeaderComponent, ModalComponent, FormModalComponent], // Import the header component for displaying checklist details, and the modal component for creating new checklist items, and the form modal component for creating new checklist items
 })
 export default class ChecklistComponent {
   checklistService = inject(ChecklistService); // Get the checklist service to manage data
