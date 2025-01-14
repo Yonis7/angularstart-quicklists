@@ -18,7 +18,8 @@ import { Checklist } from '../../shared/interfaces/checklist';
   imports: [RouterLink],
 })
 export class ChecklistHeaderComponent {
+  // This component receives a checklist object from the parent component
   checklist = input.required<Checklist>();
-
+  // This component emits the event to add a new item to the checklist when the button is clicked
   addItem = output();
 }
