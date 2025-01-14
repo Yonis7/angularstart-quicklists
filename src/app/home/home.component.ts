@@ -5,7 +5,7 @@ import { Checklist } from '../shared/interfaces/checklist';
 import { FormModalComponent } from '../shared/ui/form-modal.component';
 import { FormBuilder } from '@angular/forms';
 import { ChecklistService } from '../shared/data-access/checklist.service';
-import { ChecklistListComponent } from "../shared/ui/checklist-list.component";
+import { ChecklistListComponent } from './ui/checklist-list.component';
 
 @Component({
   selector: 'app-home', // This tells Angular where to put our home page
@@ -34,7 +34,6 @@ import { ChecklistListComponent } from "../shared/ui/checklist-list.component";
 
     <section>
       <h2>Your checklists</h2>
-      <!-- Display a list of all check lists -->
       <app-checklist-list [checklists]="checklistService.checklists()" />
     </section>
   `,
