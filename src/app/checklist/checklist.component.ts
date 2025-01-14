@@ -9,6 +9,7 @@ import { ChecklistItemService } from './data-access/checklist-item.service';
 import { ChecklistItem } from '../shared/interfaces/checklist-item';
 import { ModalComponent } from "../shared/ui/modal.component";
 import { FormModalComponent } from "../shared/ui/form-modal.component";
+import { ChecklistItemListComponent } from './ui/checklist-item-list.component';
 
 // Define our checklist component
 @Component({
@@ -20,6 +21,8 @@ import { FormModalComponent } from "../shared/ui/form-modal.component";
       [checklist]="checklist"
       (addItem)="checklistItemBeingEdited.set({})"
     />
+    <app-checklist-item-list [checklistItems]="items()" />
+
     }
 
     <app-modal [isOpen]="!!checklistItemBeingEdited()">
@@ -36,7 +39,7 @@ import { FormModalComponent } from "../shared/ui/form-modal.component";
       </ng-template>
     </app-modal>
   `,
-  imports: [ChecklistHeaderComponent, ModalComponent, FormModalComponent], // Import the header component for displaying checklist details, and the modal component for creating new checklist items, and the form modal component for creating new checklist items
+  imports: [ChecklistHeaderComponent, ModalComponent, FormModalComponent, ChecklistItemListComponent], // Import the header component for displaying checklist details, and the modal component for creating new checklist items, and the form modal component for creating new checklist items
 })
 export default class ChecklistComponent {
   checklistService = inject(ChecklistService); // Get the checklist service to manage data
@@ -79,4 +82,10 @@ export default class ChecklistComponent {
       }
     });
   }
+  //  This computed property filters the list of checklist items based on the current checklist ID
+  items = computed(() =>
+    this.checklistItemService
+      .checklistItems()
+      .filter((item) => item.checklistId === this.params()?.get('id'))
+  );
 }
