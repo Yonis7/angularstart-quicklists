@@ -1,6 +1,6 @@
 // Import necessary tools from Angular
-import { Component, input } from '@angular/core';
-import { Checklist } from '../../shared/interfaces/checklist';
+import { Component, input, output } from '@angular/core';
+import { Checklist, RemoveChecklist } from '../../shared/interfaces/checklist';
 import { RouterLink } from '@angular/router';
 
 // Define our checklist list component
@@ -12,7 +12,13 @@ import { RouterLink } from '@angular/router';
       <!-- Loop through each checklist and display its title -->
       @for (checklist of checklists(); track checklist.id){
       <li>
-        <a [routerLink]="['/checklist', checklist.id]">{{ checklist.title }}</a>
+        <a routerLink="/checklist/{{ checklist.id }}">
+          {{ checklist.title }}
+        </a>
+        <div>
+          <button (click)="edit.emit(checklist)">Edit</button>
+          <button (click)="delete.emit(checklist.id)">Delete</button>
+        </div>
       </li>
       } @empty {
       <!-- Message to show when there are no checklists -->
@@ -25,4 +31,6 @@ import { RouterLink } from '@angular/router';
 export class ChecklistListComponent {
   // Input property to receive the list of checklists from the parent component
   checklists = input.required<Checklist[]>();
+  delete = output<RemoveChecklist>();
+  edit = output<Checklist>();
 }
