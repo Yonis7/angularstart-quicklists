@@ -1,5 +1,5 @@
 import { Injectable, InjectionToken, PLATFORM_ID, inject } from '@angular/core';
-import { of, BehaviorSubject } from 'rxjs';
+import { of } from 'rxjs';
 import { Checklist } from '../interfaces/checklist';
 import { ChecklistItem } from '../interfaces/checklist-item';
 
@@ -15,41 +15,29 @@ export const LOCAL_STORAGE = new InjectionToken<Storage>(
   }
 );
 
-// This service manages storing and retrieving data from local storage
 @Injectable({
-  providedIn: 'root',  // Makes this service available throughout the app
+  providedIn: 'root',
 })
 export class StorageService {
-  // Observable to track changes in stored data
-  private storageSubject = new BehaviorSubject<Record<string, any>>({});
+  storage = inject(LOCAL_STORAGE);
 
-  // Get the current state of stored data
-  storage$ = this.storageSubject.asObservable();
-
-  // Constructor is used to load initial data from local storage
-  constructor() {
-    // Load initial data from local storage when the service is created
-    this.loadInitialData();
+  loadChecklists() {
+    const checklists = this.storage.getItem('checklists');
+    return of(checklists ? (JSON.parse(checklists) as Checklist[]) : []);
   }
 
-  // Load data from local storage and update the observable
-  private loadInitialData() {
-    const storedData = localStorage.getItem('appData');
-    if (storedData) {
-      this.storageSubject.next(JSON.parse(storedData));
-    }
+  loadChecklistItems() {
+    const checklistsItems = this.storage.getItem('checklistItems');
+    return of(
+      checklistsItems ? (JSON.parse(checklistsItems) as ChecklistItem[]) : []
+    );
   }
 
-  // Save data to local storage and update the observable
-  saveData(key: string, value: any) {
-    const currentData = this.storageSubject.value;
-    const updatedData = { ...currentData, [key]: value };
-    localStorage.setItem('appData', JSON.stringify(updatedData));
-    this.storageSubject.next(updatedData);
+  saveChecklists(checklists: Checklist[]) {
+    this.storage.setItem('checklists', JSON.stringify(checklists));
   }
 
-  // Get data by key from the observable
-  getData(key: string) {
-    return this.storageSubject.value[key];
+  saveChecklistItems(checklistItems: ChecklistItem[]) {
+    this.storage.setItem('checklistItems', JSON.stringify(checklistItems));
   }
 }
