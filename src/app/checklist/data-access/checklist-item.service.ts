@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import {
   AddChecklistItem,
   ChecklistItem,
+  EditChecklistItem,
   RemoveChecklistItem,
 } from '../../shared/interfaces/checklist-item';
 import { RemoveChecklist } from '../../shared/interfaces/checklist';
@@ -37,6 +38,12 @@ export class ChecklistItemService {
 
   // A stream to change checked state of items for a particular checklist back to false
   reset$ = new Subject<RemoveChecklist>();
+
+  remove$ = new Subject<RemoveChecklistItem>();
+
+  edit$ = new Subject<EditChecklistItem>();
+
+  checklistRemoved$ = new Subject<RemoveChecklist>();
 
   constructor() {
     // Listen for new checklist items to be added and update the state
@@ -87,6 +94,34 @@ export class ChecklistItemService {
           loaded: true,
         }))
       );
+    // A reducer function to edit the title of a checklist item by ID when it is clicked, and update the state accordingly.
+    this.edit$.pipe(takeUntilDestroyed()).subscribe((update) =>
+      this.state.update((state) => ({
+        ...state,
+        checklistItems: state.checklistItems.map((item) =>
+          item.id === update.id ? { ...item, title: update.data.title } : item
+        ),
+      }))
+    );
+
+    // A reducer function to remove a checklist item by ID when it is clicked, and update the state accordingly.
+    this.remove$.pipe(takeUntilDestroyed()).subscribe((id) =>
+      this.state.update((state) => ({
+        ...state,
+        checklistItems: state.checklistItems.filter((item) => item.id !== id),
+      }))
+    );
+    // A reducer function to remove all checklist items for a particular checklist when it is clicked, and update the state accordingly.
+        this.checklistRemoved$
+          .pipe(takeUntilDestroyed())
+          .subscribe((checklistId) =>
+            this.state.update((state) => ({
+              ...state,
+              checklistItems: state.checklistItems.filter(
+                (item) => item.checklistId !== checklistId
+              ),
+            }))
+        );
 
     // effects
     effect(() => {
