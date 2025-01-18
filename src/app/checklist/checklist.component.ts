@@ -55,6 +55,27 @@ import { ChecklistItemListComponent } from './ui/checklist-item-list.component';
     FormModalComponent,
     ChecklistItemListComponent,
   ], // Import the header component for displaying checklist details, and the modal component for creating new checklist items, and the form modal component for creating new checklist items
+  styles: [
+    `
+      ul {
+        padding: 0;
+        margin: 0;
+      }
+      li {
+        font-size: 1.5em;
+        display: flex;
+        justify-content: space-between;
+        background: var(--color-light);
+        list-style-type: none;
+        margin-bottom: 1rem;
+        padding: 1rem;
+
+        button {
+          margin-left: 1rem;
+        }
+      }
+    `,
+  ],
 })
 export default class ChecklistComponent {
   checklistService = inject(ChecklistService); // Get the checklist service to manage data
