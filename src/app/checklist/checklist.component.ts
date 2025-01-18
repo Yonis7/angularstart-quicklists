@@ -7,8 +7,8 @@ import { ChecklistHeaderComponent } from './ui/checklist-header.component';
 import { FormBuilder } from '@angular/forms';
 import { ChecklistItemService } from './data-access/checklist-item.service';
 import { ChecklistItem } from '../shared/interfaces/checklist-item';
-import { ModalComponent } from "../shared/ui/modal.component";
-import { FormModalComponent } from "../shared/ui/form-modal.component";
+import { ModalComponent } from '../shared/ui/modal.component';
+import { FormModalComponent } from '../shared/ui/form-modal.component';
 import { ChecklistItemListComponent } from './ui/checklist-item-list.component';
 
 // Define our checklist component
@@ -33,10 +33,17 @@ import { ChecklistItemListComponent } from './ui/checklist-item-list.component';
         <app-form-modal
           title="Create item"
           [formGroup]="checklistItemForm"
-          (save)="checklistItemService.add$.next({
-            item: checklistItemForm.getRawValue(),
-            checklistId: checklist()?.id!,
-          })"
+          (save)="
+      checklistItemBeingEdited()?.id
+        ? checklistItemService.edit$.next({
+          id: checklistItemBeingEdited()!.id!,
+          data: checklistItemForm.getRawValue(),
+        })
+        : checklistItemService.add$.next({
+          item: checklistItemForm.getRawValue(),
+          checklistId: checklist()?.id!,
+        })
+    "
           (close)="checklistItemBeingEdited.set(null)"
         ></app-form-modal>
       </ng-template>
@@ -82,11 +89,14 @@ export default class ChecklistComponent {
   constructor() {
     // Watch for changes to the checklist item being edited
     effect(() => {
-      // Get the current checklist item being edited
       const checklistItem = this.checklistItemBeingEdited();
-      // If no checklist item is being edited, reset the form
+
       if (!checklistItem) {
         this.checklistItemForm.reset();
+      } else {
+        this.checklistItemForm.patchValue({
+          title: checklistItem.title,
+        });
       }
     });
   }
