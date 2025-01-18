@@ -27,14 +27,25 @@ import { ChecklistListComponent } from './ui/checklist-list.component';
           "
           [formGroup]="checklistForm"
           (close)="checklistBeingEdited.set(null)"
-          (save)="checklistService.add$.next(checklistForm.getRawValue())"
+          (save)="
+            checklistBeingEdited()?.id
+              ? checklistService.edit$.next({
+                  id: checklistBeingEdited()!.id!,
+                  data: checklistForm.getRawValue()
+                })
+              : checklistService.add$.next(checklistForm.getRawValue())
+          "
         />
       </ng-template>
     </app-modal>
 
     <section>
       <h2>Your checklists</h2>
-      <app-checklist-list [checklists]="checklistService.checklists()" />
+      <app-checklist-list
+        [checklists]="checklistService.checklists()"
+        (delete)="checklistService.remove$.next($event)"
+        (edit)="checklistBeingEdited.set($event)"
+      />
     </section>
   `,
   imports: [ModalComponent, FormModalComponent, ChecklistListComponent], // Add popup window capability to our page
@@ -55,13 +66,15 @@ export default class HomeComponent {
 
   // This constructor runs when the page is loaded and sets up our form behavior, like a robot assistant for the form fields and buttons on the page.
   constructor() {
-    // Watch for changes to the checklist being edited
     effect(() => {
       const checklist = this.checklistBeingEdited();
 
-      // If no checklist is being edited, reset the form to be empty
       if (!checklist) {
         this.checklistForm.reset();
+      } else {
+        this.checklistForm.patchValue({
+          title: checklist.title,
+        });
       }
     });
   }
