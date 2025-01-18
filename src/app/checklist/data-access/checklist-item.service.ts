@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject } from 'rxjs';
 import {
@@ -7,9 +7,11 @@ import {
   RemoveChecklistItem,
 } from '../../shared/interfaces/checklist-item';
 import { RemoveChecklist } from '../../shared/interfaces/checklist';
+import { StorageService } from '../../shared/data-access/storage.service';
 
 export interface ChecklistItemsState {
   checklistItems: ChecklistItem[];
+  loaded: boolean;
 }
 
 @Injectable({
@@ -19,10 +21,12 @@ export class ChecklistItemService {
   // state
   private state = signal<ChecklistItemsState>({
     checklistItems: [],
+    loaded: false,
   });
 
   // selectors
   checklistItems = computed(() => this.state().checklistItems);
+  loaded = computed(() => this.state().loaded);
 
   // sources
   // A stream that we can use to add new checklist items
@@ -72,5 +76,29 @@ export class ChecklistItemService {
         ),
       }))
     );
+
+    // A reducer function to load checklist items from local storage and update the state
+    this.checklistItemsLoaded$
+      .pipe(takeUntilDestroyed())
+      .subscribe((checklistItems) =>
+        this.state.update((state) => ({
+          ...state,
+          checklistItems,
+          loaded: true,
+        }))
+      );
+
+    // effects
+    effect(() => {
+      if (this.loaded()) {
+        this.storageService.saveChecklistItems(this.checklistItems());
+      }
+    });
   }
+
+  // Inject the storage service to manage local storage
+  private storageService = inject(StorageService);
+
+  // A stream to load checklist items from local storage
+  private checklistItemsLoaded$ = this.storageService.loadChecklistItems();
 }
