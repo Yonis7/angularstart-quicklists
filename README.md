@@ -2,7 +2,6 @@
 
 Quicklists is a powerful and intuitive checklist management application built with Angular. It allows users to create, manage, and track multiple checklists and their items with ease. The app ensures that all data, including the completion state of checklist items, is persisted across sessions.
 
-![Quicklists Screenshot](path/to/screenshot.png)
 
 ## Key Features
 
@@ -50,5 +49,19 @@ Quicklists addresses the common need for efficient task management by providing 
 
 1. **Clone the repository**:  
    ```bash
-   git clone https://github.com/your-username/quicklists.git
+   git clone https://github.com/Yonis7/quicklists.git
    cd quicklists
+
+2. **Install dependencies**:  
+   ```bash
+   npm install
+
+3. **Run the application**:  
+   ```bash
+    ng serve --open
+
+4. **Access the application**:
+    Open your browser and navigate to `http://localhost:4200/` to view the application.
+
+## License
+Yonis7
